@@ -1,0 +1,26 @@
+name: EC2 Memory Status
+
+on:
+  workflow_dispatch:
+
+jobs:
+  check-memory:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Memory Status
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            memory_info=$(free -m)
+            swap_info=$(swapon --show)
+            echo "=== Memory Status ==="
+            echo "$memory_info"
+            echo -e "\n=== Swap Status ==="
+            if [ -z "$swap_info" ]; then
+              echo "No swap space configured"
+            else
+              echo "$swap_info"
+            fi
